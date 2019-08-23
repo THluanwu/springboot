@@ -7,3 +7,10 @@ spring:
 img:
   local:
     path: E:\\bmpicture
+
+
+
+qiniu:
+  accessKey: 1viIslqGCoF-By_LAUjI7phIdkOrpJRBGOny1z7L
+  secretKey: cY0EvMRFoVSZn4BU1mOrTCBSOUzs5-LOBgyH7AhC
+  bucket: ydbootpicture

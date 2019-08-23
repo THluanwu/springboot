@@ -92,7 +92,6 @@
     update_time, sub_images, detail,is_new,is_hot,is_banner
     from neuedu_product
   </select>
-
   <select id="selectId" resultMap="BaseResultMap" >
     <!--
       WARNING - @mbggenerated
@@ -107,7 +106,7 @@
     from neuedu_product
     <where>
       <if test="integerSet!=null and integerSet.size>0">
-        and category_id IN
+        category_id IN
         <foreach collection="integerSet" item="categoryId" open="(" close=")" separator=",">
           #{categoryId}
         </foreach>
@@ -117,5 +116,17 @@
       </if>
     </where>
   </select>
-
+  <select id="findProduct" parameterType="map" resultMap="BaseResultMap">
+    select id, category_id, name, subtitle, main_image, price, stock, status, create_time,
+    update_time, sub_images, detail,is_new,is_hot,is_banner
+    from neuedu_product
+    <where>
+      <if test="productId!=null">
+        id=#{productId}
+      </if>
+      <if test="productName!=null and productName!=''">
+        and name like #{productName}
+      </if>
+    </where>
+  </select>
 </mapper>

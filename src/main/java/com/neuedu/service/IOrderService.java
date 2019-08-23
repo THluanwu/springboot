@@ -16,4 +16,6 @@ public interface IOrderService {
     ServerResponse alipay_callback(Map<String,String> map);
     ServerResponse query_order_pay_status(Long orderNo,Integer userId);
     List<Order> closeOrder(String closeOrderDate);
+    ServerResponse backend_list(Integer pageNum,Integer pageSize);
+    ServerResponse backend_detail(Long orderNo);
 }

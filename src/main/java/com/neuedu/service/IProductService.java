@@ -29,10 +29,9 @@ public interface IProductService {
     public List<Product> findall()throws MyException;
 
     ServerResponse detail_portal(Integer productId);
-    public List<Category> findId()throws MyException;
-     ServerResponse searchAndList(Integer categoryId,
-                                        String keyword,
-                                        Integer pageNum,
-                                        Integer pageSize,
-                                        String orderBy);
+    List<Category> findId()throws MyException;
+    ServerResponse searchAndList(Integer categoryId, String keyword, Integer pageNum, Integer pageSize, String orderBy);
+
+    ServerResponse backend_list(Integer pageNum,Integer pageSize);
+    ServerResponse backend_search(Integer productId,String productName,Integer pageNum,Integer pageSize);
 }

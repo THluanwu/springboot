@@ -2,6 +2,8 @@ package com.neuedu.controller;
 
 
 import com.neuedu.common.ServerResponse;
+import com.neuedu.service.IUploadService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +27,12 @@ public class UploadController {
     @Value("${img.local.path}")
     private String imgPath;
 
+    @Autowired
+    IUploadService uploadService;
+
     @RequestMapping(value = "/upload",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse upload(@RequestParam("file")MultipartFile uploadFile){
+    public ServerResponse upload(@RequestParam("picfile")MultipartFile uploadFile){
         File newFile=null;
         if (uploadFile!=null&&uploadFile.getOriginalFilename()!=null&&uploadFile.getOriginalFilename().length()!=0){
             String uuid= UUID.randomUUID().toString();
@@ -42,7 +47,10 @@ public class UploadController {
             newFile=new File(file,newFileName);
 
             try {
+                //写到磁盘
                 uploadFile.transferTo(newFile);
+                //上传到七牛云
+                return uploadService.uploadFile(newFile);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -52,7 +60,7 @@ public class UploadController {
         }
 
 
-        return ServerResponse.createServerResponseBySucess(newFile!=null?newFile.getName():"");
+        return ServerResponse.createServerResponseByFail(9,"fail");
     }
 
 }

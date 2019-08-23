@@ -51,4 +51,6 @@ public interface ProductMapper {
     List<Product> searchProduct(@Param("integerSet") Set<Integer> integerSet,
                                 @Param("keyword") String keyword
                                 );
+
+    List<Product>findProduct(@Param("productId") Integer productId,@Param("productName") String productName);
 }

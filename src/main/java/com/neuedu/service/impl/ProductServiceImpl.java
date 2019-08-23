@@ -29,33 +29,25 @@ public class ProductServiceImpl implements IProductService {
     ProductMapper productMapper;
     @Autowired
     CategoryMapper categoryMapper;
-
     @Autowired
     ICategoryService categoryService;
-
-
-
 
     @Override
     public int addProduct(Product product) throws MyException {
         return productMapper.insert(product);
     }
-
     @Override
     public int deleteProduct(int productId) throws MyException {
         return productMapper.deleteByPrimaryKey(productId);
     }
-
     @Override
     public int updateProduct(Product product) throws MyException {
         return productMapper.updateByPrimaryKey(product);
     }
-
     @Override
     public List<Product> findall() throws MyException {
         return productMapper.selectAll();
     }
-
     @Override
     public ServerResponse detail_portal(Integer productId) {
         if (productId==null){
@@ -74,7 +66,6 @@ public class ProductServiceImpl implements IProductService {
         //返回结果
         return ServerResponse.createServerResponseBySucess(productDetailVo);
     }
-
     private ProductDetailVO assembleProductDetailVO(Product product){
         ProductDetailVO productDetailVO=new ProductDetailVO();
         productDetailVO.setCategoryId(product.getCategoryId());
@@ -114,14 +105,11 @@ public class ProductServiceImpl implements IProductService {
     public List<Category> findId() throws MyException {
         return productMapper.selectId();
     }
-
     @Override
     public ServerResponse searchAndList(Integer categoryId, String keyword, Integer pageNum, Integer pageSize, String orderBy) {
         if (categoryId==null&&(keyword==null||keyword.equals(""))){
             return ServerResponse.createServerResponseByFail(1,"参数不能为空");
-
         }
-
         Set<Integer>integerSet= Sets.newHashSet();
         if (categoryId!=null){
             Category category=categoryMapper.selectByPrimaryKey(categoryId);
@@ -162,6 +150,42 @@ public class ProductServiceImpl implements IProductService {
         }
         PageInfo pageInfo=new PageInfo(productListVOList);
         //pageInfo.setList(productListVOList);
+        return ServerResponse.createServerResponseBySucess(pageInfo);
+    }
+
+    /**
+     * 商品后台接口
+     * */
+    @Override
+    public ServerResponse backend_list(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        List<Product>productList=productMapper.selectAll();
+        List<ProductListVO>productListVOList=Lists.newArrayList();
+        if (productList!=null&&productList.size()>0){
+            for (Product product:productList){
+                ProductListVO productListVO=assembleProductListVO(product);
+                productListVOList.add(productListVO);
+            }
+        }
+        PageInfo pageInfo=new PageInfo(productListVOList);
+        return ServerResponse.createServerResponseBySucess(pageInfo);
+    }
+
+    @Override
+    public ServerResponse backend_search(Integer productId, String productName, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        if (productName!=null&&!productName.equals("")){
+            productName="%"+productName+"%";
+        }
+        List<Product>productList=productMapper.findProduct(productId,productName);
+        List<ProductListVO>productListVOList=Lists.newArrayList();
+        if (productList!=null&&productList.size()>0){
+            for (Product product:productList){
+                ProductListVO productListVO=assembleProductListVO(product);
+                productListVOList.add(productListVO);
+            }
+        }
+        PageInfo pageInfo=new PageInfo(productListVOList);
         return ServerResponse.createServerResponseBySucess(pageInfo);
     }
 }

@@ -22,7 +22,7 @@ public class CloseOrderSchedule {
     IOrderService orderService;
 
     //5s
-    @Scheduled(cron = "*/5 * * * * *")
+    @Scheduled(cron = "*/50 * * * * *")
     public void closeOrder(){
 
         //1.

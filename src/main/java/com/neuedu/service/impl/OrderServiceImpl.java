@@ -46,6 +46,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -67,6 +68,7 @@ public class OrderServiceImpl implements IOrderService {
 
 
 
+    @Transactional
     @Override
     public ServerResponse create(Integer shippingId, Integer userId) {
         //1.参数校验
@@ -91,6 +93,9 @@ public class OrderServiceImpl implements IOrderService {
         }
         BigDecimal orderTotalPrice=getOrderPrice(orderItemList);
         Order order=createOrder(userId,shippingId,orderTotalPrice);
+
+        //int a =3/0;
+
         //5.保存List<orderitem>
         for (OrderItem orderItem:orderItemList){
             orderItem.setOrderNo(order.getOrderNo());
@@ -418,6 +423,40 @@ public class OrderServiceImpl implements IOrderService {
         }
         return null;
     }
+    /**
+     * 后台-订单
+     * */
+    @Override
+    public ServerResponse backend_list(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        List<Order>orderList=orderMapper.selectAll();
+        if (orderList==null||orderList.size()==0){
+            return ServerResponse.createServerResponseByFail(4,"未查询到订单信息");
+        }
+        List<OrderVO>orderVOList=Lists.newArrayList();
+        for (Order order:orderList){
+            List<OrderItem>orderItemList=orderItemMapper.findOrderItemsByOrderno(order.getOrderNo());
+            OrderVO orderVO=assembleOrderVO(order,orderItemList,order.getShippingId());
+            orderVOList.add(orderVO);
+        }
+        PageInfo pageInfo=new PageInfo(orderVOList);
+        return ServerResponse.createServerResponseBySucess(pageInfo);
+    }
+
+    @Override
+    public ServerResponse backend_detail(Long orderNo) {
+        if (orderNo==null){
+            return ServerResponse.createServerResponseByFail(9,"参数不能为空");
+        }
+        Order order=orderMapper.findOrderByOrderNo(orderNo);
+        if (order==null){
+            return ServerResponse.createServerResponseByFail(4,"订单不存在");
+        }
+        List<OrderItem>orderItemList=orderItemMapper.findOrderItemsByOrderno(orderNo);
+        OrderVO orderVO=assembleOrderVO(order,orderItemList,order.getShippingId());
+        return ServerResponse.createServerResponseBySucess(orderVO);
+    }
+
 
     /////////////////////////////////////////////支付相关////////////////////////////////////////////////////////////
     private static Log log = LogFactory.getLog(Main.class);
